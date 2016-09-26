@@ -1,8 +1,7 @@
 name: Login
-version: 2.0.0
-description: Enables user authentication and login screen. Only a small number of changes have been made to this enabling PlexAuth SSO.
+version: 2.1.1
+description: Enables user authentication and login screen. A small number of changes have been made to this enabling PlexAuth SSO.
 icon: sign-in
-author:
   name: Team Grav with mods from YTB Team.
   url: http://getgrav.org
 keywords: admin, plugin, login
@@ -12,8 +11,9 @@ bugs: https://github.com/hjone72/grav-plugin-login/issues
 license: MIT
 
 dependencies:
-  - form
-  - email
+  - { name: grav, version: '>=1.1.4' }
+  - { name: form, version: '~2.0' }
+  - { name: email, version: '~2.0' }
 
 form:
   validation: loose
