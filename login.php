@@ -401,11 +401,41 @@ class LoginPlugin extends Plugin
      */
     public function authorizePage()
     {
-        /** @var User $user */
-        $user = $this->grav['user'];
-        if (!$user->get('access')) {
-            $user = User::load($user->get('username'));
-        }
+		if (!$this->isAdmin()){
+			$user = User::load($this->config->get('plugins.login.PlexAuth.userTemplate')); //Load in blank user file. This user is actually disabled, we'll enable them in a moment.
+			if (isset($_COOKIE[$this->config->get('plugins.login.PlexAuth.sessionCookie')])) { //Check that the YTB cookie exists. Because of Auth_Request it shouldn't be possible for it not to exist at this point.
+				$PlexAuth_id = $_COOKIE[$this->config->get('plugins.login.PlexAuth.sessionCookie')]; //Get the Session ID
+			} else {
+				header("Location: " . $this->config->get('plugins.login.PlexAuth.loginURL')); //If all else fails redirect to secure.
+				return; /** @var User $user */
+			}
+			$json = @file_get_contents($this->config->get('plugins.login.PlexAuth.userTranslater') . "&session=" . $PlexAuth_id); //Grab the JSON stream with users info. 
+			if ($json === FALSE) {
+				header("Location: " . $this->config->get('plugins.login.PlexAuth.loginURL'));
+				return; //default to english if language not set
+			}
+
+			$userData = json_decode($json); //Decode the JSON stream into something useful.
+			$data = $userData->gravPerms; //Grab the users permissions
+
+			//Magic to convert from standardClass
+			$permissions = json_decode(json_encode($data), true);
+
+			//PLEXAUTH LOGIN//
+			$user->email = $userData->email; // $user = $this->grav['user'];
+			$user->access = $permissions;
+			$user->fullname = $userData->fullname; /** @var Page $page */
+			$user->title = $this->config->get('plugins.login.PlexAuth.userTitle');
+			$page = $this->grav['page'];
+			$user->state = "enabled";
+			$user->username = $userData->username;
+		} else {
+			/** @var User $user */
+			$user = $this->grav['user'];
+			if (!$user->get('access')) {
+				$user = User::load($user->get('username'));
+			}
+		}
 
         /** @var Page $page */
         $page = $this->grav['page'];

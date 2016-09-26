@@ -35,3 +35,10 @@ rememberme:
   enabled: true
   timeout: 604800                      # Timeout in seconds. Defaults to 1 week
   name: grav-rememberme                # Name prefix of the session cookie
+  
+PlexAuth:
+  userTemplate: plex_user              # This is the username of the user we will use as a template for all PlexAuth logins.
+  userTranslater: http://localhost:8087/auth/index.php?info=getgrav     #The session will be appended to this URL. http://localhost:8087/auth/index.php?info=getgrav&session=1234
+  userTitle: PlexAuth
+  sessionCookie: PHPSESSID
+  loginURL: https://secure.domain.com
